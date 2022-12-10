@@ -16,28 +16,28 @@ def check_availability(url, phrase):
         log += "Error parsing the website"
 
 def main():
-    url = "https://www.instocktrades.com/products/mar180976d/spider-man-vs-venom-omnibus-hc"
+    url = "https://www.website.com"
     phrase = "Not Available"
     available = check_availability(url, phrase)
 
     if available:
         print('Spider-Man vs Venom')
     else:
-        url = "https://www.instocktrades.com/products/may170936d/spider-man-clone-saga-omnibus-hc-vol-02"
+        url = "https://www.website.com"
         phrase = "Not Available"
         available = check_availability(url, phrase)
 
         if available:
             print('Clone Saga Volume 2')
         else:
-            url = "https://www.instocktrades.com/products/dec181029d/hulk-by-loeb-mcguinness-omnibus-hc"
+            url = "https://www.website.com"
             phrase = "Not Available"
             available = check_availability(url, phrase)
 
             if available:
                 print('Test')
             else:
-                url = "https://www.instocktrades.com/products/oct160998d/war-of-kings-prelude-hc-road-to-war-of-kings-omnibus"
+                url = "https://www.website.com"
                 phrase = "Not Available"
                 available = check_availability(url, phrase)
 
