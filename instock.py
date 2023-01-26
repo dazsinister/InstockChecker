@@ -1,3 +1,4 @@
+#importing config, data
 from data.config import *
 from data.data import *
 import time
@@ -7,6 +8,7 @@ import smtplib
 from email.mime.text import MIMEText
 import logging
 
+urls = [url1, url2, url3, url4, url5, url6, url7, url8, url9, url10]
 
 logging.basicConfig(filename="webhook_data.log", level=logging.DEBUG)
 
@@ -57,7 +59,7 @@ def process_url(url):
             webhook.send(url)
             webhook.send(price.text.strip())
             webhook.send("__")
-            send_email("Discord Message Sent: " + title.text.strip(),
+            send_email("Book instock: " + title.text.strip(),
                        "Title: " + title.text.strip() + "\nURL: " + url + "\nPrice: " + price.text.strip())
             with open('webhook_data.txt', 'a') as f:
                 now = datetime.datetime.now()
@@ -77,15 +79,6 @@ while True:
     start_time = datetime.time(1, 0)
     end_time = datetime.time(23, 0)
     if start_time <= current_time <= end_time:
-        process_url(url1)
-        process_url(url2)
-        process_url(url3)
-        process_url(url4)
-        process_url(url5)
-        process_url(url6)
-        process_url(url7)
-        process_url(url8)
-        process_url(url9)
-        process_url(url10)
-
+        for url in urls:
+            process_url(url)
         time.sleep(0)
