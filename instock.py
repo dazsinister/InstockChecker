@@ -1,163 +1,91 @@
-import requests
-from bs4 import BeautifulSoup
-from name import *
-from price import *
+from data.config import *
+from data.data import *
 import time
 import datetime
 from discord import SyncWebhook
-from config import *
+import smtplib
+from email.mime.text import MIMEText
+import logging
+
+
+logging.basicConfig(filename="webhook_data.log", level=logging.DEBUG)
+
+# Function to send an email
+def send_email(subject, msg):
+    try:
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.ehlo()
+        server.starttls()
+        server.login(send, password)
+        message = MIMEText(msg)
+        message['Subject'] = subject
+        message['From'] = send
+        message['To'] = receive
+        server.sendmail(receive, receive, message.as_string())
+        server.quit()
+        print("Success: Email sent!")
+    except Exception as e:
+        print("Email failed to send.")
+        print(e)
 
 # damage checking
 def is_in_stock(url):
-    result = requests.get(url)
-    doc = BeautifulSoup(result.text, "html.parser")
-    cart = doc.find("button", {"class": "btn addtocart"})
-    return bool(cart)
+    try:
+        result = requests.get(url)
+        doc = BeautifulSoup(result.text, "html.parser")
+        cart = doc.find("button", {"class": "btn addtocart"})
+        return bool(cart)
+    except Exception as e:
+        send_email("Error: exception occured", str(e))
+        return False
+
+
+reported_urls = set()  # set to store URLs that have been reported as in stock
+
+def process_url(url):
+    try:
+        if url in reported_urls:
+            return  # skip the rest of the function if the URL has already been reported
+
+        if is_in_stock(url):
+            # code to send the URL to discord
+            reported_urls.add(url)
+            title = get_title_price(url)
+            price = get_title_price(url, get_title=False)
+            webhook = SyncWebhook.from_url(link)
+            webhook.send(title.text.strip())
+            webhook.send(url)
+            webhook.send(price.text.strip())
+            webhook.send("__")
+            send_email("Discord Message Sent: " + title.text.strip(),
+                       "Title: " + title.text.strip() + "\nURL: " + url + "\nPrice: " + price.text.strip())
+            with open('webhook_data.txt', 'a') as f:
+                now = datetime.datetime.now()
+                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+                f.write(timestamp + '\n')
+                f.write(title.text.strip() + '\n')
+                f.write(url + '\n')
+                f.write(price.text.strip() + '\n')
+                f.write("__\n")
+            logging.info("Data sent to webhook and written to file")
+    except Exception as e:
+        send_email("Error: exception occured", str(e))
+        logging.error("Error occurred: " + str(e))
 
 while True:
-    try:
-        if is_in_stock(url):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title1.text.strip())
-            webhook.send(url)
-            webhook.send(price1.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title1.text.strip() + '\n')
-                f.write(url + '\n')
-                f.write(price1.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
+    current_time = datetime.datetime.now().time()
+    start_time = datetime.time(1, 0)
+    end_time = datetime.time(23, 0)
+    if start_time <= current_time <= end_time:
+        process_url(url1)
+        process_url(url2)
+        process_url(url3)
+        process_url(url4)
+        process_url(url5)
+        process_url(url6)
+        process_url(url7)
+        process_url(url8)
+        process_url(url9)
+        process_url(url10)
 
-    try:
-        if is_in_stock(url2):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title2.text.strip())
-            webhook.send(url2)
-            webhook.send(price2.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title2.text.strip() + '\n')
-                f.write(url2 + '\n')
-                f.write(price2.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-    try:
-        if is_in_stock(url3):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title3.text.strip())
-            webhook.send(url3)
-            webhook.send(price3.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title3.text.strip() + '\n')
-                f.write(url3 + '\n')
-                f.write(price3.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-    try:
-        if is_in_stock(url4):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title4.text.strip())
-            webhook.send(url4)
-            webhook.send(price4.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title4.text.strip() + '\n')
-                f.write(url4 + '\n')
-                f.write(price4.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-    try:
-        if is_in_stock(url5):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title5.text.strip())
-            webhook.send(url5)
-            webhook.send(price5.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title5.text.strip() + '\n')
-                f.write(url5 + '\n')
-                f.write(price5.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-    try:
-        if is_in_stock(url6):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title6.text.strip())
-            webhook.send(url2)
-            webhook.send(price6.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title6.text.strip() + '\n')
-                f.write(url6 + '\n')
-                f.write(price6.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-    try:
-        if is_in_stock(url7):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title7.text.strip())
-            webhook.send(url3)
-            webhook.send(price7.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title7.text.strip() + '\n')
-                f.write(url7 + '\n')
-                f.write(price7.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-    try:
-        if is_in_stock(url8):
-            webhook = SyncWebhook.from_url(link)
-            webhook.send(title8.text.strip())
-            webhook.send(url4)
-            webhook.send(price8.text.strip())
-            webhook.send("__")
-            with open('webhook_data.txt', 'a') as f:
-                now = datetime.datetime.now()
-                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                f.write(timestamp + '\n')
-                f.write(title8.text.strip() + '\n')
-                f.write(url8 + '\n')
-                f.write(price8.text.strip() + '\n')
-                f.write("__\n")
-    except Exception as e:
-        print("Error: ", e)
-
-
-    time.sleep(0)
+        time.sleep(0)
