@@ -8,8 +8,10 @@ import smtplib
 from email.mime.text import MIMEText
 import logging
 
+#listing urls to make it easier to expand or to shrink depending on what my needs are
 urls = [url1, url2, url3, url4, url5, url6, url7, url8, url9, url10]
 
+#some basic logging to be able to go back and see whats going on with the bot
 logging.basicConfig(filename="webhook_data.log", level=logging.DEBUG)
 
 # Function to send an email
@@ -59,6 +61,7 @@ def process_url(url):
             webhook.send(url)
             webhook.send(price.text.strip())
             webhook.send("__")
+            #this sends the same information to my email so I can be double notified of what came instock
             send_email("Book instock: " + title.text.strip(),
                        "Title: " + title.text.strip() + "\nURL: " + url + "\nPrice: " + price.text.strip())
             with open('webhook_data.txt', 'a') as f:
@@ -73,7 +76,8 @@ def process_url(url):
     except Exception as e:
         send_email("Error: exception occured", str(e))
         logging.error("Error occurred: " + str(e))
-
+        
+#this is where the schedule starts on the program and the processing of the URLs
 while True:
     current_time = datetime.datetime.now().time()
     start_time = datetime.time(1, 0)
